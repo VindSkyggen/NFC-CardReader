@@ -1,3 +1,8 @@
 <resources>
     <string name="app_name">NFC Card Reader</string>
+    <string name="card_data_read_successfully">Card data read successfully!</string>
+    <string name="raw_response">Raw Response: %1$s</string>
+    <string name="parsed_tlv_data">Parsed TLV Data</string>
+    <string name="raw_nfc_response">Raw NFC Response</string>
+    <string name="nfc_reader_card_information">NFC Reader - Card Information</string>
 </resources>

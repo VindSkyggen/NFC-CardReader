@@ -6,7 +6,9 @@ import android.nfc.Tag
 import android.nfc.tech.IsoDep
 import android.util.Log
 import androidx.lifecycle.ViewModel
-import io.github.romantsisyk.nfccardreader.NFCData
+import io.github.romantsisyk.nfccardreader.EmvTag
+import io.github.romantsisyk.nfccardreader.model.NFCData
+import io.github.romantsisyk.nfccardreader.EmvTag.*
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 
@@ -27,11 +29,9 @@ class NFCReaderViewModel : ViewModel() {
     fun processNfcIntent(intent: Intent) {
         val tag = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG, Tag::class.java)
         if (tag != null) {
-            Log.d("NFCReader", "NFC Tag detected: $tag")
             processTag(tag)
         } else {
             _error.value = "No NFC tag found in the intent"
-            Log.e("NFCReader", "No NFC tag found in the intent")
         }
     }
 
@@ -64,31 +64,26 @@ class NFCReaderViewModel : ViewModel() {
                 )
 
                 val response = isoDep.transceive(selectVisaCommand)
-                Log.d(
-                    "NFCReader",
-                    "Raw Response Received: ${response.joinToString(", ") { "%02X".format(it) }}"
-                )
 
                 // Update raw response state
                 _rawResponse.value = parseNfcResponse(response)
-                Log.d("NFCReader", "Parsed Raw Response: ${_rawResponse.value}")
+
+                Log.d("NFCReader", "APDU Command Sent: ${selectVisaCommand.joinToString(", ") { "%02X".format(it) }}")
+                Log.d("NFCReader", "Raw Response: ${response.joinToString(", ") { "%02X".format(it) }}")
 
                 // Parse TLV Data
                 val parsedTlvData = parseTLV(response)
                 _nfcTagData.value = parsedTlvData
-                Log.d("NFCReader", "Parsed TLV Data: $parsedTlvData")
 
                 // Parse Additional Information
                 val parsedAdditionalInfo = interpretAdditionalNfcData(response)
                 _additionalInfo.value = parsedAdditionalInfo
-                Log.d("NFCReader", "Parsed Additional NFC Data: $parsedAdditionalInfo")
+                Log.d("NFCReader", "_additionalInfo: $parsedAdditionalInfo")
             } else {
                 _error.value = "Unsupported NFC Tag"
-                Log.e("NFCReader", "Unsupported NFC Tag")
             }
         } catch (e: Exception) {
             _error.value = "Error reading tag: ${e.message}"
-            Log.e("NFCReader", "Error reading tag", e)
         }
     }
 
@@ -105,33 +100,16 @@ class NFCReaderViewModel : ViewModel() {
             index += length
 
             // Map tags based on EMVLab's tag list https://emvlab.org/emvtags/all/
-            when (tag) {
-                "5F20" -> result["Cardholder Name"] = value.toString(Charsets.UTF_8)
-                "5A" -> result["Application PAN"] = value.joinToString("") { "%02X".format(it) }
-                "57" -> result["Track 2 Equivalent Data"] =
-                    value.joinToString("") { "%02X".format(it) }
-
-                "9F12" -> result["Application Preferred Name"] = value.toString(Charsets.UTF_8)
-                "9F36" -> result["Application Transaction Counter"] =
-                    value.joinToString("") { "%02X".format(it) }
-
-                "9F26" -> result["Application Cryptogram"] =
-                    value.joinToString("") { "%02X".format(it) }
-
-                "9F10" -> result["Issuer Application Data"] =
-                    value.joinToString("") { "%02X".format(it) }
-
-                "9F27" -> result["Cryptogram Information Data"] =
-                    value.joinToString("") { "%02X".format(it) }
-
-                "9F34" -> result["Cardholder Verification Method (CVM)"] =
-                    value.joinToString("") { "%02X".format(it) }
-
-                else -> result["Tag $tag"] = value.joinToString("") { "%02X".format(it) }
+            when (val emvTag = EmvTag.fromTag(tag)) {
+                CARDHOLDER_NAME -> result[emvTag.name] = value.toString(Charsets.UTF_8)
+                APPLICATION_PAN -> result[emvTag.name] = maskPan(value.joinToString("") { "%02X".format(it) })
+                TRACK2_EQUIVALENT_DATA -> result[emvTag.name] = maskTrack2Data(value.joinToString("") { "%02X".format(it) })
+                EXPIRATION_DATE -> result[emvTag.name] = value.joinToString("") { "%02X".format(it) }
+                APPLICATION_PREFERRED_NAME -> result[emvTag.name] = value.toString(Charsets.UTF_8)
+                UNKNOWN -> result["Tag $tag"] = value.joinToString("") { "%02X".format(it) }
+                else -> Unit
             }
         }
-
-        Log.d("NFCReader", "Final Parsed TLV Map: $result")
         return result
     }
 
@@ -141,18 +119,11 @@ class NFCReaderViewModel : ViewModel() {
                 val asciiRepresentation = response.joinToString("") { byte ->
                     if (byte in 32..126) byte.toInt().toChar().toString() else "."
                 }
-                val parsed = "ASCII: $asciiRepresentation\nHex: ${
-                    response.joinToString(" ") {
-                        "%02X".format(it)
-                    }
-                }"
-                Log.d("NFCReader", "ASCII and Hex Parsed Response: $parsed")
-                parsed
+                "ASCII: $asciiRepresentation\nHex: ${response.joinToString(" ") { "%02X".format(it) }}"
             } else {
                 "Empty response from NFC tag"
             }
         } catch (e: Exception) {
-            Log.e("NFCReader", "Error parsing NFC response", e)
             "Error parsing NFC response: ${e.message}"
         }
     }
@@ -169,20 +140,43 @@ class NFCReaderViewModel : ViewModel() {
         var i = 0
         while (i < hexBytes.size) {
             val tag = hexBytes[i]
-            // Map tags based on EMVLab's tag list https://emvlab.org/emvtags/all/
-            when (tag) {
-                "6F" -> if (hexBytes.getOrNull(i + 2) == "A0") cardType = "Visa Debit"
-                "50" -> applicationLabel = "FP Visa Debit"
-                "9F02" -> transactionAmount = decodeAmount(hexBytes.subList(i + 1, i + 7))
-                "5F2A" -> currencyCode = decodeCurrency(hexBytes.subList(i + 1, i + 3))
-                "9A" -> transactionDate = decodeDate(hexBytes.subList(i + 1, i + 4))
-                "90" -> transactionStatus =
-                    if (hexBytes.getOrNull(i + 1) == "00") "Successful" else "Error"
+            when (EmvTag.fromTag(tag)) {
+                CARD_TYPE -> {
+                    if (hexBytes.getOrNull(i + 2) == "A0") {
+                        cardType = "Visa Debit"
+                    }
+                }
+                APPLICATION_LABEL -> {
+                    applicationLabel = "FP Visa Debit"
+                }
+                TRANSACTION_AMOUNT -> {
+                    transactionAmount = decodeAmount(hexBytes.subList(i + 1, i + 7))
+                    i += 6
+                }
+                CURRENCY_CODE -> {
+                    currencyCode = decodeCurrency(hexBytes.subList(i + 1, i + 3))
+                    i += 2
+                }
+                // TRANSACTION_DATE AS EXAMPLE(Tag: 9A, Length: 3 bytes)
+                // Extracts the transaction date in the format YYMMDD (e.g., "2024-11-23").
+                // - `i + 1`: Skips the tag byte (9A).
+                // - `i + Length + 1`: Reads the next 3 bytes (Length = 3) for the date value.
+                // - `i += Length`: Advances the index by 3 to continue parsing the next tag.
+
+                TRANSACTION_DATE -> {
+                    transactionDate = decodeDate(hexBytes.subList(i + 1, i + 4))
+                    i += 3
+                }
+                TRANSACTION_STATUS -> {
+                    transactionStatus = if (hexBytes.getOrNull(i + 1) == "00") "Successful" else "Error"
+                    i += 1
+                }
+                else -> Unit
             }
             i++
         }
 
-        val parsedData = NFCData(
+        return NFCData(
             cardType = cardType,
             applicationLabel = applicationLabel,
             transactionAmount = transactionAmount,
@@ -190,9 +184,6 @@ class NFCReaderViewModel : ViewModel() {
             transactionDate = transactionDate,
             transactionStatus = transactionStatus
         )
-
-        Log.d("NFCReader", "Interpreted Additional NFC Data: $parsedData")
-        return parsedData
     }
 
     private fun decodeAmount(bytes: List<String>): String {
@@ -216,11 +207,18 @@ class NFCReaderViewModel : ViewModel() {
         return "$year-$month-$day"
     }
 
+    private fun maskPan(pan: String): String {
+        return pan.replace(Regex("\\d(?=\\d{4})"), "X")
+    }
+
+    private fun maskTrack2Data(track2: String): String {
+        return track2.replace(Regex("\\d(?=\\d{4})"), "X").replace("=", "X")
+    }
+
     fun clearNfcData() {
         _nfcTagData.value = emptyMap()
         _rawResponse.value = ""
         _error.value = null
         _additionalInfo.value = null
-        Log.d("NFCReader", "Cleared all NFC data")
     }
 }
