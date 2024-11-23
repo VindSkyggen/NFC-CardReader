@@ -1,6 +1,5 @@
-package io.github.romantsisyk.nfccardreader
+package io.github.romantsisyk.nfccardreader.app
 
-import android.content.Intent
 import android.nfc.NfcAdapter
 import android.os.Bundle
 import android.util.Log
@@ -10,8 +9,8 @@ import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
 import androidx.lifecycle.lifecycleScope
 import dagger.hilt.android.AndroidEntryPoint
-import io.github.romantsisyk.nfccardreader.ui.NFCReaderUI
-import io.github.romantsisyk.nfccardreader.ui.NFCReaderViewModel
+import io.github.romantsisyk.nfccardreader.presentation.ui.NFCReaderUI
+import io.github.romantsisyk.nfccardreader.presentation.viewmodel.NFCReaderViewModel
 import kotlinx.coroutines.launch
 
 @AndroidEntryPoint

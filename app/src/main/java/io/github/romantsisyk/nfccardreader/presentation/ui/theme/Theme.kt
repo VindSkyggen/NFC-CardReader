@@ -1,4 +1,4 @@
-package io.github.romantsisyk.nfccardreader.ui.theme
+package io.github.romantsisyk.nfccardreader.presentation.ui.theme
 
 import android.app.Activity
 import android.os.Build

@@ -1,4 +1,4 @@
-package io.github.romantsisyk.nfccardreader
+package io.github.romantsisyk.nfccardreader.domain
 
 enum class EmvTag(val tag: String) {
     // Tags for TLV parsing

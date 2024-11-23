@@ -1,12 +1,12 @@
-package io.github.romantsisyk.nfccardreader
+package io.github.romantsisyk.nfccardreader.di
 
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
-import io.github.romantsisyk.nfccardreader.usecase.InterpretNfcDataUseCase
-import io.github.romantsisyk.nfccardreader.usecase.ParseTLVUseCase
-import io.github.romantsisyk.nfccardreader.usecase.ProcessNfcIntentUseCase
+import io.github.romantsisyk.nfccardreader.domain.usecase.InterpretNfcDataUseCase
+import io.github.romantsisyk.nfccardreader.domain.usecase.ParseTLVUseCase
+import io.github.romantsisyk.nfccardreader.domain.usecase.ProcessNfcIntentUseCase
 
 @Module
 @InstallIn(SingletonComponent::class)

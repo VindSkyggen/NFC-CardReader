@@ -1,4 +1,4 @@
-package io.github.romantsisyk.nfccardreader.ui
+package io.github.romantsisyk.nfccardreader.presentation.ui
 
 
 import androidx.compose.foundation.background
@@ -17,6 +17,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import io.github.romantsisyk.nfccardreader.R
+import io.github.romantsisyk.nfccardreader.presentation.viewmodel.NFCReaderViewModel
 import io.github.romantsisyk.nfccardreader.utils.orNA
 
 @Composable

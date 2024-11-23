@@ -1,15 +1,15 @@
-package io.github.romantsisyk.nfccardreader.usecase
+package io.github.romantsisyk.nfccardreader.domain.usecase
 
 import android.content.Intent
 import android.nfc.NfcAdapter
 import android.nfc.Tag
 import android.nfc.tech.IsoDep
-import io.github.romantsisyk.nfccardreader.model.NFCData
+import io.github.romantsisyk.nfccardreader.domain.model.NFCData
 import javax.inject.Inject
 
 class ProcessNfcIntentUseCase @Inject constructor(
     private val parseTLVUseCase: ParseTLVUseCase,
-    private val interpretNfcDataUseCase: InterpretNfcDataUseCase
+    val interpretNfcDataUseCase: InterpretNfcDataUseCase
 ) {
 
     fun execute(intent: Intent): NFCData {

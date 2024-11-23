@@ -1,4 +1,4 @@
-package io.github.romantsisyk.nfccardreader
+package io.github.romantsisyk.nfccardreader.app
 
 import android.app.Application
 import dagger.hilt.android.HiltAndroidApp

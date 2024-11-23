@@ -1,4 +1,4 @@
-package io.github.romantsisyk.nfccardreader.model
+package io.github.romantsisyk.nfccardreader.domain.model
 
 data class NFCData(
     val rawResponse: String = "",

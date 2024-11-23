@@ -1,4 +1,4 @@
-package io.github.romantsisyk.nfccardreader.ui.theme
+package io.github.romantsisyk.nfccardreader.presentation.ui.theme
 
 import androidx.compose.ui.graphics.Color
 
