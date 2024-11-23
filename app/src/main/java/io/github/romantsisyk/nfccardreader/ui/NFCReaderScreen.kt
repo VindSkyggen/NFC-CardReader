@@ -120,7 +120,7 @@ fun NFCReaderUI(viewModel: NFCReaderViewModel) {
                                     Text("$key: $value", fontSize = 16.sp)
                                 }
                             } else {
-                                Text("No TLV data available", fontSize = 16.sp)
+                                Text(stringResource(R.string.no_tlv_data_available), fontSize = 16.sp)
                             }
                         }
                     }

@@ -1,16 +1,20 @@
 package io.github.romantsisyk.nfccardreader
 
+import android.content.Intent
 import android.nfc.NfcAdapter
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
 import androidx.lifecycle.lifecycleScope
+import dagger.hilt.android.AndroidEntryPoint
 import io.github.romantsisyk.nfccardreader.ui.NFCReaderUI
 import io.github.romantsisyk.nfccardreader.ui.NFCReaderViewModel
 import kotlinx.coroutines.launch
 
+@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
 
     private val viewModel: NFCReaderViewModel by viewModels()
@@ -26,11 +30,17 @@ class MainActivity : ComponentActivity() {
     override fun onResume() {
         super.onResume()
         intent?.let {
+            Log.d("MainActivity", "Intent action: ${it.action}")
             if (it.action == NfcAdapter.ACTION_TAG_DISCOVERED) {
                 lifecycleScope.launch {
-                    viewModel.processNfcIntent(it)
+                    try {
+                        viewModel.processNfcIntent(it)
+                    } catch (e: Exception) {
+                        Log.e("MainActivity", "Error processing NFC intent", e)
+                    }
                 }
             }
         }
     }
+
 }

@@ -5,4 +5,5 @@
     <string name="parsed_tlv_data">Parsed TLV Data</string>
     <string name="raw_nfc_response">Raw NFC Response</string>
     <string name="nfc_reader_card_information">NFC Reader - Card Information</string>
+    <string name="no_tlv_data_available">No TLV data available</string>
 </resources>
