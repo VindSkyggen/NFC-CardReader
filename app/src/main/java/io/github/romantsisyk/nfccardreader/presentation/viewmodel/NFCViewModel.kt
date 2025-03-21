@@ -52,35 +52,58 @@ class NFCReaderViewModel @Inject constructor(
     fun processMockNfcIntent() {
         viewModelScope.launch {
             val mockData = NFCData(
-                rawResponse = "6F 20 84 0E 325041592E5359532E4444463031 A5 0E 88 01 01 5F 2D 02 7265 9F 11 01 01 " +
-                        "5F 20 0A 4A6F686E20446F65 5A 08 123456789012345F 24 03 240101 9F 12 06 56697361 " +
-                        "57 13 1234567890123456D240101234567890 5F 28 02 0804 5F 30 02 0201 " +
-                        "9F 02 06 000000012345 5F 2A 02 0840 9A 03 220306 90 00",
+                rawResponse = "6F 37 84 0E 325041592E5359532E4444463031 A5 25 88 01 02 5F 2D 02 656E " +
+                        "9F 11 01 01 50 0A 4D617374657243617264 87 01 01 9F 38 06 9F1A029505 " +
+                        "5F 20 0F 4A4F484E20512E2050554254494320 5A 0B 5412345678901234 5F 24 03 250228 " +
+                        "5F 30 02 0201 9F 0D 05 B0600000 9F 0E 05 0010000000 9F 0F 05 B0604000 " +
+                        "9F 12 0A 4D6173746572436172 57 13 5412345678901234D250228753622340 " +
+                        "5F 28 02 0840 9F 1C 08 30303030303132 9F 1E 08 3132333435363738 " +
+                        "9F 36 02 0003 82 02 1980 95 05 0080008000 9C 01 00 " +
+                        "9F 02 06 000000002500 5F 2A 02 0840 9A 03 230420 9F 21 03 103542 " +
+                        "9F 26 08 A1B2C3D4E5F6789A 9F 27 01 80 9F 34 03 1E0305 9F 37 04 FE9A8B21 " +
+                        "9F 10 12 0110A00003220000000000000000000F 9F 6E 04 04210103 90 00",
                 parsedTlvData = mapOf(
-                    "Cardholder Name" to "John Doe",
-                    "Application PAN" to "1234 5678 9012 3456",
-                    "Track2 Equivalent Data" to "1234567890123456D240101234567890",
-                    "Expiration Date" to "01/24",
-                    "Application Preferred Name" to "Visa Debit",
+                    "Cardholder Name" to "JOHN Q. PUBLIC",
+                    "Application PAN" to "5412 3456 7890 1234",
+                    "Track2 Equivalent Data" to "5412345678901234D250228753622340",
+                    "Expiration Date" to "02/25",
+                    "Application Preferred Name" to "MasterCard",
                     "Service Code" to "201",
                     "Issuer Country Code" to "USA",
-                    "Dedicated File Name" to "2PAY.SYS.DDF01"
+                    "Dedicated File Name" to "2PAY.SYS.DDF01",
+                    "Application Cryptogram" to "A1B2C3D4E5F6789A",
+                    "Terminal Verification Results" to "0080008000",
+                    "Application Transaction Counter" to "0003",
+                    "Interface Device Serial Number" to "12345678",
+                    "Terminal ID" to "00000012",
+                    "Application Interchange Profile" to "1980",
+                    "Issuer Application Data" to "0110A00003220000000000000000000F",
+                    "Form Factor Indicator" to "04210103",
+                    "Language Preference" to "en",
+                    "Unpredictable Number" to "FE9A8B21"
                 ),
-                cardType = "Visa Debit",
-                applicationLabel = "Visa",
-                transactionAmount = "123.45",
+                cardType = "MasterCard Credit",
+                applicationLabel = "MasterCard",
+                transactionAmount = "25.00",
                 currencyCode = "USD",
-                transactionDate = "06.03.2022",
+                transactionDate = "20.04.2023",
                 transactionStatus = "Successful",
-                applicationIdentifier = "Visa",
+                applicationIdentifier = "MasterCard",
                 dedicatedFileName = "2PAY.SYS.DDF01",
                 issuerCountryCode = "USA",
                 serviceCode = "International interchange, By issuer, No restrictions",
                 formFactorIndicator = "Physical card with contact chip and contactless",
-                applicationTemplate = "A5 0E 88 01 01 5F 2D 02 7265 9F 11 01 01",
-                unpredictableNumber = "FE12CD45",
+                applicationTemplate = "A5 25 88 01 02 5F 2D 02 656E 9F 11 01 01",
+                unpredictableNumber = "FE9A8B21",
                 cardholderVerificationMethodResults = "Online PIN verified",
-                applicationCryptogram = "A1B2C3D4"
+                applicationCryptogram = "A1B2C3D4E5F6789A",
+                applicationTransactionCounter = "0003",
+                applicationInterchangeProfile = "1980",
+                terminalVerificationResults = "0080008000",
+                transactionType = "Purchase",
+                issuerApplicationData = "0110A00003220000000000000000000F",
+                terminalCountryCode = "USA",
+                interfaceDeviceSerialNumber = "12345678"
             )
             _nfcTagData.value = mockData.parsedTlvData
             _rawResponse.value = mockData.rawResponse

@@ -109,7 +109,7 @@ fun NFCReaderUI(viewModel: NFCReaderViewModel) {
                                 onClick = { viewModel.processMockNfcIntent() },
                                 shape = androidx.compose.foundation.shape.RoundedCornerShape(8.dp)
                             ) {
-                                Icon(Icons.Default.DataObject, contentDescription = "Mock")
+                                Icon(Icons.Default.Refresh, contentDescription = "Mock")
                                 Spacer(modifier = Modifier.width(4.dp))
                                 Text("Load Mock Data")
                             }
@@ -134,7 +134,7 @@ fun NFCReaderUI(viewModel: NFCReaderViewModel) {
                                 horizontalArrangement = Arrangement.SpaceBetween
                             ) {
                                 Row(verticalAlignment = Alignment.CenterVertically) {
-                                    Icon(Icons.Default.Code, contentDescription = null, modifier = Modifier.padding(end = 8.dp))
+                                    Icon(Icons.Default.Terminal, contentDescription = null, modifier = Modifier.padding(end = 8.dp))
                                     Text(stringResource(R.string.raw_nfc_response), fontSize = 18.sp, fontWeight = FontWeight.Bold)
                                 }
                                 Icon(
@@ -220,7 +220,7 @@ fun NFCReaderUI(viewModel: NFCReaderViewModel) {
                                 horizontalArrangement = Arrangement.SpaceBetween
                             ) {
                                 Row(verticalAlignment = Alignment.CenterVertically) {
-                                    Icon(Icons.Default.Payments, contentDescription = null, modifier = Modifier.padding(end = 8.dp))
+                                    Icon(Icons.Default.Paid, contentDescription = null, modifier = Modifier.padding(end = 8.dp))
                                     Text("Transaction Information", fontSize = 18.sp, fontWeight = FontWeight.Bold)
                                 }
                                 Icon(
@@ -264,7 +264,7 @@ fun NFCReaderUI(viewModel: NFCReaderViewModel) {
                                 horizontalArrangement = Arrangement.SpaceBetween
                             ) {
                                 Row(verticalAlignment = Alignment.CenterVertically) {
-                                    Icon(Icons.Default.MenuBook, contentDescription = null, modifier = Modifier.padding(end = 8.dp))
+                                    Icon(Icons.Default.Info, contentDescription = null, modifier = Modifier.padding(end = 8.dp))
                                     Text("Advanced Card Information", fontSize = 18.sp, fontWeight = FontWeight.Bold)
                                 }
                                 Icon(
@@ -328,7 +328,7 @@ fun NFCReaderUI(viewModel: NFCReaderViewModel) {
                                 horizontalArrangement = Arrangement.SpaceBetween
                             ) {
                                 Row(verticalAlignment = Alignment.CenterVertically) {
-                                    Icon(Icons.Default.Security, contentDescription = null, modifier = Modifier.padding(end = 8.dp))
+                                    Icon(Icons.Default.Lock, contentDescription = null, modifier = Modifier.padding(end = 8.dp))
                                     Text("Security Information", fontSize = 18.sp, fontWeight = FontWeight.Bold)
                                 }
                                 Icon(
