@@ -1,7 +1,7 @@
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.jetbrains.kotlin.android)
-    id("com.google.devtools.ksp")
+    id("com.google.devtools.ksp") version "1.9.0-1.0.13"
     id("dagger.hilt.android.plugin")
 }
 
@@ -54,6 +54,11 @@ android {
         unitTests {
             isIncludeAndroidResources = true
             isReturnDefaultValues = true
+            
+            // Add VM args for Mockito with Java 21
+            all {
+                it.jvmArgs("-Dnet.bytebuddy.experimental=true")
+            }
         }
     }
 }
@@ -61,14 +66,15 @@ android {
 repositories {
     google()
     mavenCentral()
+    maven { url = uri("https://jitpack.io") }
 }
 
 dependencies {
 
     implementation(libs.hilt.android)
-    ksp(libs.hilt.compiler)
-//    implementation(libs.androidx.hilt.lifecycle.viewmodel)
-    ksp(libs.androidx.hilt.compiler)
+    implementation(libs.hilt.compiler)
+    //implementation(libs.androidx.hilt.lifecycle.viewmodel)
+    implementation(libs.androidx.hilt.compiler)
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
@@ -85,13 +91,15 @@ dependencies {
     // Base testing dependencies
     testImplementation(libs.junit)
     
-    // Mockito for mocking
+    // Mockito for mocking - using stable versions that are widely available
     testImplementation("org.mockito:mockito-core:4.5.1")
     testImplementation("org.mockito:mockito-inline:4.5.1") // For mocking final classes and static methods
-    testImplementation("org.mockito.kotlin:mockito-kotlin:4.1.0") // Kotlin-friendly Mockito API
+    
+    // Use mockito-kotlin instead of org.mockito.kotlin to avoid compatibility issues
+    testImplementation("com.nhaarman.mockitokotlin2:mockito-kotlin:2.2.0")
     
     // Coroutines testing
-    testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.6.4")
+    testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.7.3")
     
     // AndroidX test dependencies
     testImplementation("androidx.test:core:1.5.0")
@@ -99,15 +107,10 @@ dependencies {
     testImplementation("androidx.arch.core:core-testing:2.2.0") // For InstantTaskExecutorRule
     
     // Robolectric for Android framework simulation in unit tests
-    testImplementation("org.robolectric:robolectric:4.9")
+    testImplementation("org.robolectric:robolectric:4.11.1")
     
     // Truth for easier assertions
-    testImplementation("com.google.truth:truth:1.1.3")
-    
-    // JUnit 5 compatibility (optional, if you want to use JUnit 5 features)
-    testImplementation("org.junit.jupiter:junit-jupiter-api:5.9.3")
-    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.9.3")
-    testImplementation("org.junit.jupiter:junit-jupiter-params:5.9.3")
+    testImplementation("com.google.truth:truth:1.1.5")
     
     // Instrumented test dependencies
     androidTestImplementation(libs.androidx.junit)
@@ -118,7 +121,7 @@ dependencies {
     
     // Hilt testing
     testImplementation("com.google.dagger:hilt-android-testing:${libs.versions.hiltAndroid.get()}")
-    kspTest("com.google.dagger:hilt-android-compiler:${libs.versions.hiltAndroid.get()}")
+    testImplementation("com.google.dagger:hilt-android-compiler:${libs.versions.hiltAndroid.get()}")
     
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)

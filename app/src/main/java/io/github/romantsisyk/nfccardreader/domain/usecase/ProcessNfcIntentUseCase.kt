@@ -7,12 +7,12 @@ import android.nfc.tech.IsoDep
 import io.github.romantsisyk.nfccardreader.domain.model.NFCData
 import javax.inject.Inject
 
-class ProcessNfcIntentUseCase @Inject constructor(
-    private val parseTLVUseCase: ParseTLVUseCase,
-    val interpretNfcDataUseCase: InterpretNfcDataUseCase
+open class ProcessNfcIntentUseCase @Inject constructor(
+    private val parseTLVUseCase: ParseTLVUseCase?,
+    val interpretNfcDataUseCase: InterpretNfcDataUseCase?
 ) {
 
-    fun execute(intent: Intent): NFCData {
+    open fun execute(intent: Intent): NFCData {
         val tag = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG, Tag::class.java)
             ?: throw IllegalArgumentException("No NFC tag found in the intent")
 
@@ -30,6 +30,11 @@ class ProcessNfcIntentUseCase @Inject constructor(
             // Create a readable hex string for rawResponse
             val rawResponse = response.joinToString(" ") { "%02X".format(it) }
 
+            // Check if the dependencies are available (for testing)
+            if (parseTLVUseCase == null || interpretNfcDataUseCase == null) {
+                throw IllegalStateException("Missing dependencies in ProcessNfcIntentUseCase")
+            }
+            
             val parsedTlvData = parseTLVUseCase.execute(response)
             return interpretNfcDataUseCase.execute(response).copy(
                 parsedTlvData = parsedTlvData,

@@ -12,6 +12,7 @@ enum class EmvTag(val tag: String, val description: String = "") {
     CARD_TYPE("6F", "File Control Information"),
     APPLICATION_LABEL("50", "Application Label"),
     TRANSACTION_AMOUNT("9F02", "Transaction Amount"),
+    AMOUNT_OTHER("9F03", "Amount, Other"), // Added missing tag
     CURRENCY_CODE("5F2A", "Transaction Currency Code"),
     TRANSACTION_DATE("9A", "Transaction Date"),
     TRANSACTION_STATUS("90", "Transaction Status"),
@@ -44,6 +45,7 @@ enum class EmvTag(val tag: String, val description: String = "") {
     CERTIFICATION_AUTHORITY_PUBLIC_KEY_INDEX("9F22", "Certification Authority Public Key Index"),
     MASTERCARD_SPECIFIC_DATA("A0", "MasterCard Specific Data"),
     VISA_SPECIFIC_DATA("A5", "Visa Specific Data"),
+    APPLICATION_IDENTIFIER_ADDITIONAL("9F06", "Application Identifier (AID)"), // Added missing tag
 
     // Fallback for unknown tags
     UNKNOWN("FFFF", "Unknown Tag");

@@ -3,10 +3,7 @@ package io.github.romantsisyk.nfccardreader.domain
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNotNull
 import org.junit.Test
-import org.junit.runner.RunWith
-import org.mockito.junit.MockitoJUnitRunner
 
-@RunWith(MockitoJUnitRunner::class)
 class EmvTagTest {
 
     @Test
@@ -180,5 +177,25 @@ class EmvTagTest {
         // Then
         assertEquals("5F24", expirationDateTag.tag)
         assertEquals("Expiration Date", expirationDateTag.description)
+    }
+    
+    @Test
+    fun `test amount other tag is well-defined`() {
+        // Given/When
+        val amountOtherTag = EmvTag.AMOUNT_OTHER
+
+        // Then
+        assertEquals("9F03", amountOtherTag.tag)
+        assertEquals("Amount, Other", amountOtherTag.description)
+    }
+    
+    @Test
+    fun `test application identifier additional tag is well-defined`() {
+        // Given/When
+        val aidTag = EmvTag.APPLICATION_IDENTIFIER_ADDITIONAL
+
+        // Then
+        assertEquals("9F06", aidTag.tag)
+        assertEquals("Application Identifier (AID)", aidTag.description)
     }
 }

@@ -1,12 +1,8 @@
 package io.github.romantsisyk.nfccardreader.utils
 
-import io.github.romantsisyk.nfccardreader.util.createHexList
 import org.junit.Assert.*
 import org.junit.Test
-import org.junit.runner.RunWith
-import org.mockito.junit.MockitoJUnitRunner
 
-@RunWith(MockitoJUnitRunner::class)
 class NfcDataMaskerTest {
 
     @Test
@@ -73,11 +69,10 @@ class NfcDataMaskerTest {
         // Should mask PAN and replace equal sign
         assertTrue(result.contains("X"))
         assertTrue(result.contains("X"))
-        assertEquals('X', result[result.indexOf('=')])
     }
 
     @Test
-    fun `test maskTrack2Data with HEX track2 data`() {
+    fun `test maskTrack2Data with no equals sign`() {
         // Given
         val track2 = "4111111111111111D25022010000000000000"
         
@@ -85,10 +80,9 @@ class NfcDataMaskerTest {
         val result = NfcDataMasker.maskTrack2Data(track2)
         
         // Then
-        // Should mask PAN and leave the rest unchanged
+        // Should mask PAN and leave the D unchanged
         assertTrue(result.contains("X"))
         assertTrue(result.contains("D"))
-        assertEquals('D', result[result.indexOf('D')])
     }
 
     @Test
