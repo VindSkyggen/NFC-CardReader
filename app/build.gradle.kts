@@ -50,6 +50,8 @@ android {
     packaging {
         resources {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
+            // Fix for duplicate META-INF files
+            excludes += "META-INF/gradle/incremental.annotation.processors"
         }
     }
     // Enable test options
@@ -71,7 +73,7 @@ dependencies {
     coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.0.3")
     
     implementation(libs.hilt.android)
-    implementation(libs.hilt.compiler)
+    ksp(libs.hilt.compiler)  // Changed from implementation to ksp
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
@@ -105,7 +107,20 @@ dependencies {
     
     // Hilt testing
     testImplementation("com.google.dagger:hilt-android-testing:${libs.versions.hiltAndroid.get()}")
-    testImplementation("com.google.dagger:hilt-android-compiler:${libs.versions.hiltAndroid.get()}")
+    kspTest("com.google.dagger:hilt-android-compiler:${libs.versions.hiltAndroid.get()}")
+
+    // Fix for Android instrumented tests
+    androidTestImplementation(libs.androidx.junit)
+    androidTestImplementation("androidx.test:runner:1.5.2")
+    androidTestImplementation("androidx.test:rules:1.5.0")
+    androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
+    androidTestImplementation("junit:junit:4.13.2")
+    androidTestImplementation("androidx.test.ext:junit:1.1.5")
+    androidTestImplementation("androidx.test.ext:junit-ktx:1.1.5")
+    
+    // Hilt testing for Android tests
+    androidTestImplementation("com.google.dagger:hilt-android-testing:${libs.versions.hiltAndroid.get()}")
+    kspAndroidTest("com.google.dagger:hilt-android-compiler:${libs.versions.hiltAndroid.get()}")
     
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
