@@ -104,8 +104,8 @@ dependencies {
     testImplementation("org.robolectric:robolectric:4.9")
     
     // Hilt testing
-    testImplementation(libs.hilt.android.testing)
-    testImplementation(libs.hilt.android.compiler)
+    testImplementation("com.google.dagger:hilt-android-testing:${libs.versions.hiltAndroid.get()}")
+    testImplementation("com.google.dagger:hilt-android-compiler:${libs.versions.hiltAndroid.get()}")
     
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
