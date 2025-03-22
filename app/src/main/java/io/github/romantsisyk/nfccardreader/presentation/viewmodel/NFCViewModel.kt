@@ -13,7 +13,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class NFCReaderViewModel @Inject constructor(
-    private val processNfcIntentUseCase: ProcessNfcIntentUseCase
+    private val processNfcIntentUseCase: ProcessNfcIntentUseCase?
 ) : ViewModel() {
 
     private val _nfcTagData = MutableStateFlow<Map<String, String>>(emptyMap())
@@ -31,6 +31,11 @@ class NFCReaderViewModel @Inject constructor(
     fun processNfcIntent(intent: Intent) {
         viewModelScope.launch {
             try {
+                if (processNfcIntentUseCase == null) {
+                    _error.value = "ProcessNfcIntentUseCase is not initialized (testing only)"
+                    return@launch
+                }
+                
                 val data = processNfcIntentUseCase.execute(intent)
                 _nfcTagData.value = data.parsedTlvData
                 _rawResponse.value = data.rawResponse
