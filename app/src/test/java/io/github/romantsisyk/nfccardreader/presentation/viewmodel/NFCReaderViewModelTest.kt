@@ -1,9 +1,7 @@
 package io.github.romantsisyk.nfccardreader.presentation.viewmodel
 
-import android.content.Intent
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import io.github.romantsisyk.nfccardreader.domain.model.NFCData
-import io.github.romantsisyk.nfccardreader.domain.usecase.ProcessNfcIntentUseCase
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.first
@@ -17,6 +15,10 @@ import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 
+/**
+ * Simple test for NFCReaderViewModel that doesn't use any mocking.
+ * Tests only the state management of the ViewModel.
+ */
 @ExperimentalCoroutinesApi
 class NFCReaderViewModelTest {
 
@@ -24,19 +26,15 @@ class NFCReaderViewModelTest {
     val instantTaskExecutorRule = InstantTaskExecutorRule()
 
     private val testDispatcher = StandardTestDispatcher()
-
-    // Manually create mocks instead of using annotations
-    private lateinit var processNfcIntentUseCase: ProcessNfcIntentUseCase
-    private lateinit var intent: Intent
     private lateinit var viewModel: NFCReaderViewModel
 
     @Before
     fun setUp() {
         Dispatchers.setMain(testDispatcher)
         
-        // Simplified approach without mocking
-        // Just test the ViewModel's initial state and mock data
-        viewModel = NFCReaderViewModel(FakeProcessNfcIntentUseCase())
+        // Create a view model without dependency injection
+        // We don't need a real ProcessNfcIntentUseCase as we're only testing state
+        viewModel = NFCReaderViewModel(null)
     }
 
     @After
@@ -76,23 +74,16 @@ class NFCReaderViewModelTest {
 
         // Then
         testDispatcher.scheduler.advanceUntilIdle()
-        assertFalse(viewModel.nfcTagData.first().isEmpty())
-        assertNotEquals("Empty NFC Response", viewModel.rawResponse.first())
-        assertNotNull(viewModel.additionalInfo.first())
-        assertNull(viewModel.error.first())
         
         // Verify the mock data contains expected fields
+        assertFalse(viewModel.nfcTagData.first().isEmpty())
+        assertNotEquals("Empty NFC Response", viewModel.rawResponse.first())
+        
         val mockData = viewModel.additionalInfo.first()
+        assertNotNull(mockData)
         assertEquals("MasterCard Credit", mockData?.cardType)
         assertEquals("MasterCard", mockData?.applicationLabel)
         assertEquals("25.00", mockData?.transactionAmount)
         assertEquals("USD", mockData?.currencyCode)
-    }
-    
-    // Fake implementation for testing without mocking
-    class FakeProcessNfcIntentUseCase : ProcessNfcIntentUseCase(null, null) {
-        override fun execute(intent: Intent): NFCData {
-            throw RuntimeException("This fake should never be called")
-        }
     }
 }

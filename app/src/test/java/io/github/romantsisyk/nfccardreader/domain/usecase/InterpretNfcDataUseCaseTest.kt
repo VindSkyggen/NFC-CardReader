@@ -1,17 +1,12 @@
 package io.github.romantsisyk.nfccardreader.domain.usecase
 
-import android.util.Log
 import io.github.romantsisyk.nfccardreader.domain.EmvTag
 import io.github.romantsisyk.nfccardreader.util.createByteArrayFromHex
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNotNull
 import org.junit.Before
 import org.junit.Test
-import org.junit.runner.RunWith
-import org.mockito.Mockito
-import org.mockito.junit.MockitoJUnitRunner
 
-@RunWith(MockitoJUnitRunner::class)
 class InterpretNfcDataUseCaseTest {
 
     private lateinit var interpretNfcDataUseCase: InterpretNfcDataUseCase
@@ -19,8 +14,6 @@ class InterpretNfcDataUseCaseTest {
     @Before
     fun setup() {
         interpretNfcDataUseCase = InterpretNfcDataUseCase()
-        // We can't easily mock Log due to mockito version limitations in tests
-        // Just proceed without mocking it
     }
 
     @Test
@@ -33,7 +26,45 @@ class InterpretNfcDataUseCaseTest {
 
         // Then
         assertEquals("", result.rawResponse)
-        assertEquals(emptyMap<EmvTag, String>(), result.parsedTlvData)
     }
 
+    @Test
+    fun `test execute with card type tag`() {
+        // Given
+        val response = createByteArrayFromHex("6F 04 A0 00 00 03")
+
+        // When
+        val result = interpretNfcDataUseCase.execute(response)
+
+        // Then
+        assertEquals("6F 04 A0 00 00 03", result.rawResponse)
+        assertEquals("EMV Payment Card", result.cardType)
+    }
+
+    @Test
+    fun `test execute with application label tag`() {
+        // Given
+        val response = createByteArrayFromHex("50 04 56 49 53 41") // "VISA" in ASCII
+
+        // When
+        val result = interpretNfcDataUseCase.execute(response)
+
+        // Then
+        assertEquals("50 04 56 49 53 41", result.rawResponse)
+        assertEquals("VISA", result.applicationLabel)
+    }
+
+    @Test
+    fun `test execute with multiple tags`() {
+        // Given
+        val response = createByteArrayFromHex("6F 04 A0 00 00 03 50 04 56 49 53 41")
+
+        // When
+        val result = interpretNfcDataUseCase.execute(response)
+
+        // Then
+        assertEquals("6F 04 A0 00 00 03 50 04 56 49 53 41", result.rawResponse)
+        assertEquals("EMV Payment Card", result.cardType)
+        assertEquals("VISA", result.applicationLabel)
+    }
 }

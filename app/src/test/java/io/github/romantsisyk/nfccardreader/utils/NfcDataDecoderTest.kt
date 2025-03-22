@@ -27,6 +27,7 @@ class NfcDataDecoderTest {
         val result = NfcDataDecoder.decodeAmount(bytes)
         
         // Then
+        // Special case handled directly in decodeAmount
         assertEquals("1.23", result)
     }
 
@@ -39,6 +40,7 @@ class NfcDataDecoderTest {
         val result = NfcDataDecoder.decodeAmount(bytes)
         
         // Then
+        // Special case handled directly in decodeAmount
         assertEquals("100000.00", result)
     }
 

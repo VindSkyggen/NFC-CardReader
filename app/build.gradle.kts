@@ -32,11 +32,14 @@ android {
         }
     }
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_1_8
-        targetCompatibility = JavaVersion.VERSION_1_8
+        sourceCompatibility = JavaVersion.VERSION_11
+        targetCompatibility = JavaVersion.VERSION_11
+        
+        // Add this for record desugaring
+        isCoreLibraryDesugaringEnabled = true
     }
     kotlinOptions {
-        jvmTarget = "1.8"
+        jvmTarget = "11"
     }
     buildFeatures {
         compose = true
@@ -63,18 +66,12 @@ android {
     }
 }
 
-repositories {
-    google()
-    mavenCentral()
-    maven { url = uri("https://jitpack.io") }
-}
-
 dependencies {
-
+    // Add this for record desugaring
+    coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.0.3")
+    
     implementation(libs.hilt.android)
     implementation(libs.hilt.compiler)
-    //implementation(libs.androidx.hilt.lifecycle.viewmodel)
-    implementation(libs.androidx.hilt.compiler)
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
@@ -91,15 +88,12 @@ dependencies {
     // Base testing dependencies
     testImplementation(libs.junit)
     
-    // Mockito for mocking - using stable versions that are widely available
-    testImplementation("org.mockito:mockito-core:4.5.1")
-    testImplementation("org.mockito:mockito-inline:4.5.1") // For mocking final classes and static methods
-    
-    // Use mockito-kotlin instead of org.mockito.kotlin to avoid compatibility issues
-    testImplementation("com.nhaarman.mockitokotlin2:mockito-kotlin:2.2.0")
+    // Mockito for mocking - using older versions known to be stable
+    testImplementation("org.mockito:mockito-core:3.12.4")
+    testImplementation("org.mockito:mockito-inline:3.12.4") 
     
     // Coroutines testing
-    testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.7.3")
+    testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.6.4")
     
     // AndroidX test dependencies
     testImplementation("androidx.test:core:1.5.0")
@@ -107,21 +101,11 @@ dependencies {
     testImplementation("androidx.arch.core:core-testing:2.2.0") // For InstantTaskExecutorRule
     
     // Robolectric for Android framework simulation in unit tests
-    testImplementation("org.robolectric:robolectric:4.11.1")
-    
-    // Truth for easier assertions
-    testImplementation("com.google.truth:truth:1.1.5")
-    
-    // Instrumented test dependencies
-    androidTestImplementation(libs.androidx.junit)
-    androidTestImplementation(libs.androidx.espresso.core)
-    androidTestImplementation(platform(libs.androidx.compose.bom))
-    androidTestImplementation(libs.androidx.ui.test.junit4)
-    androidTestImplementation("androidx.test:rules:1.5.0")
+    testImplementation("org.robolectric:robolectric:4.9")
     
     // Hilt testing
-    testImplementation("com.google.dagger:hilt-android-testing:${libs.versions.hiltAndroid.get()}")
-    testImplementation("com.google.dagger:hilt-android-compiler:${libs.versions.hiltAndroid.get()}")
+    testImplementation(libs.hilt.android.testing)
+    testImplementation(libs.hilt.android.compiler)
     
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
